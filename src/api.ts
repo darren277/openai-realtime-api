@@ -107,6 +107,8 @@ export class RealtimeAPI extends RealtimeEventHandler<
         )
       }
 
+      console.log("DEBUG: url.toString() = ", url.toString())
+
       const ws = new WebSocket(
         url.toString(),
         [
