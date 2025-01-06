@@ -32,6 +32,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "prepare": "run-s build",
     "dev": "tsup --watch",
     "pretest": "run-s build",
     "test": "run-s test:*",
