@@ -37,6 +37,8 @@ export class RealtimeClient extends RealtimeEventHandler<
   realtime: RealtimeAPI
   conversation: RealtimeConversation
 
+  userId?: string
+
   inputAudioBuffer: Int16Array
   sessionCreated: boolean
   tools: Record<
@@ -58,6 +60,7 @@ export class RealtimeClient extends RealtimeEventHandler<
     url?: string
     dangerouslyAllowAPIKeyInBrowser?: boolean
     debug?: boolean
+    userId?: string
     /**
      * Relay mode disables tool use, since it will be the responsibility of the
      * upstream client to handle tool calls.

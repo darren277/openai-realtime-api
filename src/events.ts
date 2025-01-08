@@ -207,6 +207,9 @@ export namespace RealtimeServerEvents {
   }
 
   export interface ServerEvent extends Event {
+    response: any
+    transcript: any
+    delta: any
     /** The event type. */
     type: EventType
 

@@ -8,6 +8,7 @@ import type {
   RealtimeServerEvents
 } from './events'
 import { RealtimeEventHandler } from './event-handler'
+import { processEventForRelay } from './process-event-for-relay'
 import {
   generateId,
   getEnv,
@@ -44,6 +45,7 @@ export class RealtimeAPI extends RealtimeEventHandler<
   readonly url: string
   readonly apiKey?: string
   readonly debug: boolean
+  userId?: string
   ws?: WebSocket | WS
 
   /**
@@ -54,13 +56,15 @@ export class RealtimeAPI extends RealtimeEventHandler<
     url = 'wss://api.openai.com/v1/realtime',
     apiKey = getEnv('OPENAI_API_KEY'),
     dangerouslyAllowAPIKeyInBrowser,
-    debug
+    debug,
+    userId
   }: {
     model?: string
     url?: string
     apiKey?: string
     dangerouslyAllowAPIKeyInBrowser?: boolean
     debug?: boolean
+    userId?: string
   } = {}) {
     super()
 
@@ -68,6 +72,7 @@ export class RealtimeAPI extends RealtimeEventHandler<
     this.url = url
     this.apiKey = apiKey
     this.debug = !!debug
+    this.userId = userId
 
     if (isBrowser && this.apiKey) {
       if (!dangerouslyAllowAPIKeyInBrowser) {
@@ -100,14 +105,14 @@ export class RealtimeAPI extends RealtimeEventHandler<
     const url = new URL(this.url)
     url.searchParams.set('model', this.model)
 
+    console.log("DEBUG: url.toString() =", url.toString())
+
     if (hasNativeWebSocket()) {
       if (isBrowser && this.apiKey) {
         console.warn(
           'Warning: Connecting using API key in the browser, this is not recommended'
         )
       }
-
-      console.log("DEBUG: url.toString() = ", url.toString())
 
       const ws = new WebSocket(
         url.toString(),
@@ -229,6 +234,8 @@ export class RealtimeAPI extends RealtimeEventHandler<
     this.dispatch(eventName, event)
     this.dispatch(`server.${eventName}`, event)
     this.dispatch('server.*', event)
+
+    processEventForRelay(this.userId || '', event)
   }
 
   /**
